@@ -13,8 +13,12 @@
 // DEBUGGING FLAGS
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-#define DEBUG
-#define INTRO_DEBUG
+
+// Leaving these uncommented for now - I used these for printing things to 
+// serial monitor during development and debugging
+
+//#define DEBUG
+//#define INTRO_DEBUG
 // Debugging for BLE Communication functions
 //#define BLE_DEBUG
 
@@ -261,7 +265,7 @@
 //=================================================================
 // === INITIAL CONTROL SCHEME SELECTION
 //=================================================================
-boolean stateSpace = true; //true for SS control, false for PID control
+boolean stateSpace = false; //true for SS control, false for PID control
 
 //**********************************************************************
 // ACCELEROMETER AND GYRO RELATED
@@ -476,8 +480,9 @@ void loop() {
   metersEncM2 = tempEncCountM2 / OUTPUT_CPR * 2 * M_PI * R_WHEEL; // distance in meters
   distance = (metersEncM1 + metersEncM2) / 2.0; // average of the two
 
-
+  #ifdef DEBUG
     Serial.println(velocity);
+  #endif
 
   //See if anything is available on bluetooth
   checkForBLE();
@@ -510,6 +515,7 @@ void controlCalc() {
       Xw2 = Xw1;
       Xw1 = Xw0;
       Xw0 = distance;
+      // discrete time digital low pass filter
       velocity = (5 * Xw0 + 2 * Xw1 - 8 * Xw2 - 2 * Xw3 + 3 * Xw4) / (8 * controlLoopPeriod);
       // K[0] = xw
       // K[1] = xw_dot
