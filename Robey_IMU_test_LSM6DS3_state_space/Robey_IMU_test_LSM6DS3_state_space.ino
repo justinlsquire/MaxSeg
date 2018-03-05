@@ -610,7 +610,7 @@ void readIMU(void) {
 
   tempBuf = (((int)(IMU_High << 8) | (byte(IMU_Low))) - gyroOffset);
 
-  filteredGyro = (ALPHA_GYRO * lastFilteredGyro) + (ALPHA_GYRO * tempBuf);
+  filteredGyro = ((1-ALPHA_GYRO) * lastFilteredGyro) + (ALPHA_GYRO * tempBuf);
   lastFilteredGyro = filteredGyro;
 
   // Save to array
